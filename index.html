@@ -11,7 +11,7 @@
   <div id="app">
 
     <!-- ══════════════════════════════════════
-         TITLE SCREEN
+         TITLE SCREEN  (unchanged from v0.1)
     ══════════════════════════════════════ -->
     <section id="title-screen" class="screen">
 
@@ -22,7 +22,7 @@
       </div>
 
       <div class="title-inner">
-        <div class="title-badge">EST. 2026</div>
+        <div class="title-badge">EST. 2025</div>
         <h1 class="hero-title">LEGACY<span>LEAGUE</span></h1>
         <p class="tagline">Build your legacy from unknown prospect<br>to basketball legend.</p>
 
@@ -38,7 +38,7 @@
     </section>
 
     <!-- ══════════════════════════════════════
-         HOW TO PLAY PANEL (modal)
+         HOW TO PLAY PANEL  (unchanged from v0.1)
     ══════════════════════════════════════ -->
     <div id="how-to-play-panel" class="modal-overlay hidden">
       <div class="modal-box">
@@ -57,7 +57,7 @@
     </div>
 
     <!-- ══════════════════════════════════════
-         CHOOSE PATH SCREEN
+         CHOOSE PATH SCREEN  (unchanged from v0.1)
     ══════════════════════════════════════ -->
     <section id="choose-path-screen" class="screen hidden">
 
@@ -111,7 +111,7 @@
             <button id="random-player-btn" class="secondary-btn card-action-btn">Select →</button>
           </div>
 
-        </div><!-- /card-grid -->
+        </div>
 
         <p id="path-message" class="message"></p>
       </div>
@@ -119,7 +119,7 @@
     </section>
 
     <!-- ══════════════════════════════════════
-         CREATE PLAYER SCREEN
+         CREATE PLAYER SCREEN  (unchanged from v0.1)
     ══════════════════════════════════════ -->
     <section id="create-player-screen" class="screen hidden">
 
@@ -132,23 +132,14 @@
         <h2 class="screen-heading">Create Your Player</h2>
         <p class="screen-sub">Design your first Legacy League prospect.</p>
 
-        <!-- Player Name -->
         <div class="form-section">
           <label class="field-label" for="player-name">Player Name</label>
-          <input
-            type="text"
-            id="player-name"
-            class="input-field"
-            placeholder="Enter your player name"
-            maxlength="32"
-          />
+          <input type="text" id="player-name" class="input-field" placeholder="Enter your player name" maxlength="32" />
         </div>
 
-        <!-- Position -->
         <div class="form-section">
           <label class="field-label">Position</label>
           <div class="card-grid three-col" id="position-group">
-
             <label class="choice-card sel-card">
               <input type="radio" name="position" value="Guard" />
               <div class="sel-card-inner">
@@ -156,7 +147,6 @@
                 <div class="sel-card-desc">Fast, skilled, and ball-dominant.</div>
               </div>
             </label>
-
             <label class="choice-card sel-card">
               <input type="radio" name="position" value="Wing" />
               <div class="sel-card-inner">
@@ -164,7 +154,6 @@
                 <div class="sel-card-desc">Balanced scorer with size and versatility.</div>
               </div>
             </label>
-
             <label class="choice-card sel-card">
               <input type="radio" name="position" value="Big" />
               <div class="sel-card-inner">
@@ -172,15 +161,12 @@
                 <div class="sel-card-desc">Strong interior player who controls the paint.</div>
               </div>
             </label>
-
           </div>
         </div>
 
-        <!-- Archetype -->
         <div class="form-section">
           <label class="field-label">Archetype</label>
           <div class="card-grid col-list" id="archetype-group">
-
             <label class="choice-card sel-card sel-card-wide">
               <input type="radio" name="archetype" value="Underrated Prospect" />
               <div class="sel-card-inner">
@@ -188,7 +174,6 @@
                 <div class="sel-card-desc">Small-town player nobody believes in. Starts with low popularity but strong work ethic and high potential.</div>
               </div>
             </label>
-
             <label class="choice-card sel-card sel-card-wide">
               <input type="radio" name="archetype" value="Athletic Freak" />
               <div class="sel-card-inner">
@@ -196,7 +181,6 @@
                 <div class="sel-card-desc">Explosive athlete with elite physical tools. Great finishing and athleticism, but needs skill development.</div>
               </div>
             </label>
-
             <label class="choice-card sel-card sel-card-wide">
               <input type="radio" name="archetype" value="Overseas Talent" />
               <div class="sel-card-inner">
@@ -204,7 +188,6 @@
                 <div class="sel-card-desc">Skilled international prospect adjusting to a new basketball culture. Strong IQ and fundamentals, but starts with lower popularity.</div>
               </div>
             </label>
-
             <label class="choice-card sel-card sel-card-wide">
               <input type="radio" name="archetype" value="Raw Beginner" />
               <div class="sel-card-inner">
@@ -212,7 +195,6 @@
                 <div class="sel-card-desc">Late bloomer with limited experience but huge upside. Starts weak but has major growth potential.</div>
               </div>
             </label>
-
             <label class="choice-card sel-card sel-card-wide">
               <input type="radio" name="archetype" value="Coach's Kid" />
               <div class="sel-card-inner">
@@ -220,15 +202,12 @@
                 <div class="sel-card-desc">Grew up around the game and understands basketball deeply. Strong IQ and decision-making, but less athletic.</div>
               </div>
             </label>
-
           </div>
         </div>
 
-        <!-- Style / Build -->
         <div class="form-section">
           <label class="field-label">Style / Build</label>
           <div class="card-grid two-col" id="style-group">
-
             <label class="choice-card sel-card">
               <input type="radio" name="style" value="Small Guard" />
               <div class="sel-card-inner">
@@ -236,7 +215,6 @@
                 <div class="sel-card-desc">Quick and crafty, but smaller.</div>
               </div>
             </label>
-
             <label class="choice-card sel-card">
               <input type="radio" name="style" value="Balanced Wing" />
               <div class="sel-card-inner">
@@ -244,7 +222,6 @@
                 <div class="sel-card-desc">Versatile size and all-around style.</div>
               </div>
             </label>
-
             <label class="choice-card sel-card">
               <input type="radio" name="style" value="Athletic Wing" />
               <div class="sel-card-inner">
@@ -252,7 +229,6 @@
                 <div class="sel-card-desc">Explosive and highlight-focused.</div>
               </div>
             </label>
-
             <label class="choice-card sel-card">
               <input type="radio" name="style" value="Big Man" />
               <div class="sel-card-inner">
@@ -260,60 +236,234 @@
                 <div class="sel-card-desc">Tall, strong, and paint-focused.</div>
               </div>
             </label>
-
           </div>
         </div>
 
-        <!-- Jersey Number -->
         <div class="form-section">
           <label class="field-label" for="jersey-number">Jersey Number</label>
-          <input
-            type="number"
-            id="jersey-number"
-            class="input-field jersey-input"
-            placeholder="23"
-            min="0"
-            max="99"
-          />
+          <input type="number" id="jersey-number" class="input-field jersey-input" placeholder="23" min="0" max="99" />
         </div>
 
         <p id="create-message" class="message error-message"></p>
-
         <button id="start-career-btn" class="primary-btn full-btn">Start Career →</button>
-
-      </div><!-- /screen-content -->
-    </section>
-
-    <!-- ══════════════════════════════════════
-         DASHBOARD SCREEN
-    ══════════════════════════════════════ -->
-    <section id="dashboard-screen" class="screen hidden">
-      <div class="screen-content">
-
-        <h2 class="screen-heading">Career Dashboard</h2>
-
-        <div class="dashboard-card">
-          <div class="dash-jersey" id="dashboard-jersey">—</div>
-          <div class="dash-info">
-            <div class="dash-name" id="dashboard-player-name">—</div>
-            <div class="dash-meta">
-              <span id="dashboard-position">—</span>
-              &nbsp;·&nbsp;
-              <span id="dashboard-style">—</span>
-            </div>
-            <div class="dash-archetype" id="dashboard-archetype">—</div>
-          </div>
-        </div>
-
-        <div class="version-note">
-          <span class="version-pill">v0.1</span>
-          Version 0.1 complete. Training, games, and career decisions are coming next.
-        </div>
-
-        <button id="reset-career-btn" class="secondary-btn danger-btn">Reset Career</button>
 
       </div>
     </section>
+
+    <!-- ══════════════════════════════════════
+         DASHBOARD SCREEN  ← REPLACED IN v0.2
+    ══════════════════════════════════════ -->
+    <section id="dashboard-screen" class="screen hidden">
+
+      <!-- ── TOP HEADER BANNER ── -->
+      <div class="dashboard-header">
+        <div class="player-title-block">
+          <div class="db-jersey" id="dashboard-jersey">—</div>
+          <div class="player-title-text">
+            <h2 id="dashboard-player-name">—</h2>
+            <p id="dashboard-career-title">Rising Prospect</p>
+          </div>
+        </div>
+        <div class="dashboard-header-meta">
+          <div class="meta-pill">OVR <span id="dashboard-overall">—</span></div>
+          <div class="meta-pill">Stage: <span id="dashboard-stage">—</span></div>
+          <div class="meta-pill">Week: <span id="dashboard-week">—</span></div>
+        </div>
+      </div>
+
+      <!-- ── MAIN 3-COLUMN GRID ── -->
+      <div class="dashboard-grid">
+
+        <!-- ════ LEFT COLUMN ════ -->
+        <div class="dashboard-left">
+
+          <!-- Player Info -->
+          <section class="dashboard-panel player-info-panel">
+            <h3 class="panel-heading">Player Info</h3>
+            <ul class="info-list">
+              <li class="info-row"><span class="info-label">Position</span><span class="info-value" id="dashboard-position">—</span></li>
+              <li class="info-row"><span class="info-label">Archetype</span><span class="info-value" id="dashboard-archetype">—</span></li>
+              <li class="info-row"><span class="info-label">Build</span><span class="info-value" id="dashboard-style">—</span></li>
+              <li class="info-row"><span class="info-label">Age</span><span class="info-value" id="dashboard-age">18</span></li>
+              <li class="info-row"><span class="info-label">Team</span><span class="info-value" id="dashboard-team">—</span></li>
+              <li class="info-row"><span class="info-label">Health</span><span class="info-value" id="dashboard-injury-status">Healthy</span></li>
+            </ul>
+            <p class="backstory-text" id="dashboard-backstory"></p>
+          </section>
+
+          <!-- Attributes -->
+          <section class="dashboard-panel attributes-panel">
+            <h3 class="panel-heading">Attributes</h3>
+
+            <div class="attribute-row">
+              <div class="attribute-label">
+                <span class="attribute-name">Shooting</span>
+                <span class="attribute-value" id="stat-shooting">—</span>
+              </div>
+              <div class="attribute-bar"><div class="attribute-fill" id="bar-shooting"></div></div>
+            </div>
+
+            <div class="attribute-row">
+              <div class="attribute-label">
+                <span class="attribute-name">Finishing</span>
+                <span class="attribute-value" id="stat-finishing">—</span>
+              </div>
+              <div class="attribute-bar"><div class="attribute-fill" id="bar-finishing"></div></div>
+            </div>
+
+            <div class="attribute-row">
+              <div class="attribute-label">
+                <span class="attribute-name">Handles</span>
+                <span class="attribute-value" id="stat-handles">—</span>
+              </div>
+              <div class="attribute-bar"><div class="attribute-fill" id="bar-handles"></div></div>
+            </div>
+
+            <div class="attribute-row">
+              <div class="attribute-label">
+                <span class="attribute-name">Defense</span>
+                <span class="attribute-value" id="stat-defense">—</span>
+              </div>
+              <div class="attribute-bar"><div class="attribute-fill" id="bar-defense"></div></div>
+            </div>
+
+            <div class="attribute-row">
+              <div class="attribute-label">
+                <span class="attribute-name">IQ</span>
+                <span class="attribute-value" id="stat-iq">—</span>
+              </div>
+              <div class="attribute-bar"><div class="attribute-fill" id="bar-iq"></div></div>
+            </div>
+
+            <div class="attribute-row">
+              <div class="attribute-label">
+                <span class="attribute-name">Athleticism</span>
+                <span class="attribute-value" id="stat-athleticism">—</span>
+              </div>
+              <div class="attribute-bar"><div class="attribute-fill" id="bar-athleticism"></div></div>
+            </div>
+
+          </section>
+
+          <!-- Capital / Brand -->
+          <section class="dashboard-panel capital-panel">
+            <h3 class="panel-heading">Capital</h3>
+            <div class="capital-grid">
+              <div class="capital-item">
+                <span class="capital-label">Brand Value</span>
+                <span class="capital-value" id="dashboard-brand-value">0</span>
+              </div>
+              <div class="capital-item">
+                <span class="capital-label">Investments</span>
+                <span class="capital-value" id="dashboard-investments">$0</span>
+              </div>
+              <div class="capital-item">
+                <span class="capital-label">Endorsements</span>
+                <span class="capital-value" id="dashboard-endorsements">None</span>
+              </div>
+            </div>
+            <div class="capital-buttons">
+              <button id="buy-gear-btn" class="secondary-btn action-sm-btn">🛒 Buy Gear</button>
+              <button id="invest-money-btn" class="secondary-btn action-sm-btn">📈 Invest</button>
+              <button id="build-brand-btn" class="secondary-btn action-sm-btn">📣 Build Brand</button>
+            </div>
+          </section>
+
+        </div><!-- /dashboard-left -->
+
+        <!-- ════ CENTER COLUMN ════ -->
+        <div class="dashboard-center">
+
+          <!-- Story / Career Feed -->
+          <section class="dashboard-panel story-panel">
+            <h3 class="panel-heading">Career Feed</h3>
+            <div id="story-feed"></div>
+
+            <div class="dashboard-actions">
+              <button id="train-btn" class="primary-btn action-btn">💪 Train</button>
+              <button id="play-game-btn" class="primary-btn action-btn">🏀 Play Game</button>
+              <button id="rest-btn" class="secondary-btn action-btn">😴 Rest</button>
+              <button id="social-media-btn" class="secondary-btn action-btn">📱 Social Media</button>
+            </div>
+          </section>
+
+          <!-- Weekly Progression -->
+          <section class="dashboard-panel week-panel">
+            <h3 class="panel-heading">Season Progress</h3>
+            <div class="week-info-row">
+              <span id="dashboard-season-label">Senior Season</span>
+              <span id="dashboard-week-progress">Week 1 of 12</span>
+            </div>
+            <div class="week-progress-bar">
+              <div id="week-progress-fill"></div>
+            </div>
+            <div class="week-bottom-row">
+              <span id="dashboard-record">Record: 0-0</span>
+              <button id="advance-week-btn" class="primary-btn advance-btn">Advance Week →</button>
+            </div>
+          </section>
+
+        </div><!-- /dashboard-center -->
+
+        <!-- ════ RIGHT COLUMN ════ -->
+        <div class="dashboard-right">
+
+          <!-- Resources -->
+          <section class="dashboard-panel resources-panel">
+            <h3 class="panel-heading">Status</h3>
+            <div class="resource-grid">
+              <div class="resource-card">
+                <div class="resource-icon">⚡</div>
+                <div class="resource-label">Energy</div>
+                <div class="resource-value" id="dashboard-energy">100</div>
+              </div>
+              <div class="resource-card">
+                <div class="resource-icon">💰</div>
+                <div class="resource-label">Money</div>
+                <div class="resource-value" id="dashboard-money">$0</div>
+              </div>
+              <div class="resource-card">
+                <div class="resource-icon">👥</div>
+                <div class="resource-label">Followers</div>
+                <div class="resource-value" id="dashboard-followers">0</div>
+              </div>
+              <div class="resource-card">
+                <div class="resource-icon">📊</div>
+                <div class="resource-label">Draft Stock</div>
+                <div class="resource-value" id="dashboard-draft-stock">Unranked</div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Career Summary -->
+          <section class="dashboard-panel career-summary-panel">
+            <h3 class="panel-heading">Career Summary</h3>
+            <ul class="info-list">
+              <li class="info-row"><span class="info-label">Games</span><span class="info-value" id="dashboard-games-played">0</span></li>
+              <li class="info-row"><span class="info-label">PPG</span><span class="info-value" id="dashboard-ppg">0.0</span></li>
+              <li class="info-row"><span class="info-label">Reputation</span><span class="info-value" id="dashboard-reputation">Unknown</span></li>
+              <li class="info-row"><span class="info-label">Legacy</span><span class="info-value" id="dashboard-legacy-score">0</span></li>
+            </ul>
+          </section>
+
+          <!-- Management -->
+          <section class="dashboard-panel management-panel">
+            <h3 class="panel-heading">Management</h3>
+            <div class="management-buttons">
+              <button id="save-career-btn" class="secondary-btn mgmt-btn">💾 Save Career</button>
+              <button id="back-to-title-from-dashboard-btn" class="secondary-btn mgmt-btn">🏠 Title Screen</button>
+              <button id="reset-career-btn" class="secondary-btn danger-btn mgmt-btn">🗑 Reset Career</button>
+            </div>
+          </section>
+
+        </div><!-- /dashboard-right -->
+
+      </div><!-- /dashboard-grid -->
+
+      <!-- Dashboard message bar -->
+      <p id="dashboard-message" class="message dashboard-message-bar"></p>
+
+    </section><!-- /dashboard-screen -->
 
   </div><!-- /app -->
 
