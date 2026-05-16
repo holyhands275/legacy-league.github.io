@@ -137,9 +137,10 @@
           <input type="text" id="player-name" class="input-field" placeholder="Enter your player name" maxlength="32" />
         </div>
 
-        <div class="form-section">
+        <div class="form-section create-two-col-layout">
+          <div class="create-col">
           <label class="field-label">Position</label>
-          <div class="card-grid three-col" id="position-group">
+          <div class="card-grid three-col modern-select-grid" id="position-group">
             <label class="choice-card sel-card">
               <input type="radio" name="position" value="Guard" />
               <div class="sel-card-inner">
@@ -162,11 +163,11 @@
               </div>
             </label>
           </div>
-        </div>
+          </div>
 
-        <div class="form-section">
+          <div class="create-col">
           <label class="field-label">Archetype</label>
-          <div class="card-grid col-list" id="archetype-group">
+          <div class="card-grid col-list modern-select-grid" id="archetype-group">
             <label class="choice-card sel-card sel-card-wide">
               <input type="radio" name="archetype" value="Underrated Prospect" />
               <div class="sel-card-inner">
@@ -202,6 +203,7 @@
                 <div class="sel-card-desc">Grew up around the game and understands basketball deeply. Strong IQ and decision-making, but less athletic.</div>
               </div>
             </label>
+          </div>
           </div>
         </div>
 
@@ -241,7 +243,49 @@
 
         <div class="form-section">
           <label class="field-label" for="jersey-number">Jersey Number</label>
-          <input type="number" id="jersey-number" class="input-field jersey-input" placeholder="23" min="0" max="99" />
+          <input type="number" id="jersey-number" class="input-field jersey-input" placeholder="23" min="0" max="99" maxLength="2" inputmode="numeric" />
+        </div>
+
+        <div class="form-section">
+          <label class="field-label">Choose Character</label>
+          <div class="character-grid" id="character-group">
+            <label class="character-card sel-card">
+              <input type="radio" name="character" value="1|Floor General|https://picsum.photos/seed/legacy-char-1/220/280" />
+              <div class="character-media"><img src="https://picsum.photos/seed/legacy-char-1/220/280" alt="Floor General character" /></div>
+              <div class="character-meta"><div class="sel-card-title">Floor General</div><div class="sel-card-desc">Commanding lead guard.</div></div>
+            </label>
+            <label class="character-card sel-card">
+              <input type="radio" name="character" value="2|Sharpshooter|https://picsum.photos/seed/legacy-char-2/220/280" />
+              <div class="character-media"><img src="https://picsum.photos/seed/legacy-char-2/220/280" alt="Sharpshooter character" /></div>
+              <div class="character-meta"><div class="sel-card-title">Sharpshooter</div><div class="sel-card-desc">Elite perimeter bucket-getter.</div></div>
+            </label>
+            <label class="character-card sel-card">
+              <input type="radio" name="character" value="3|Two-Way Wing|https://picsum.photos/seed/legacy-char-3/220/280" />
+              <div class="character-media"><img src="https://picsum.photos/seed/legacy-char-3/220/280" alt="Two-Way Wing character" /></div>
+              <div class="character-meta"><div class="sel-card-title">Two-Way Wing</div><div class="sel-card-desc">Balanced on both ends.</div></div>
+            </label>
+            <label class="character-card sel-card">
+              <input type="radio" name="character" value="4|Slasher|https://picsum.photos/seed/legacy-char-4/220/280" />
+              <div class="character-media"><img src="https://picsum.photos/seed/legacy-char-4/220/280" alt="Slasher character" /></div>
+              <div class="character-meta"><div class="sel-card-title">Slasher</div><div class="sel-card-desc">Relentless downhill attacker.</div></div>
+            </label>
+            <label class="character-card sel-card">
+              <input type="radio" name="character" value="5|Rim Protector|https://picsum.photos/seed/legacy-char-5/220/280" />
+              <div class="character-media"><img src="https://picsum.photos/seed/legacy-char-5/220/280" alt="Rim Protector character" /></div>
+              <div class="character-meta"><div class="sel-card-title">Rim Protector</div><div class="sel-card-desc">Anchors the paint.</div></div>
+            </label>
+            <label class="character-card sel-card">
+              <input type="radio" name="character" value="6|Athletic Freak|https://picsum.photos/seed/legacy-char-6/220/280" />
+              <div class="character-media"><img src="https://picsum.photos/seed/legacy-char-6/220/280" alt="Athletic Freak character" /></div>
+              <div class="character-meta"><div class="sel-card-title">Athletic Freak</div><div class="sel-card-desc">Explosive all-court athlete.</div></div>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <label class="field-label">Choose Starting School</label>
+          <div class="school-group" id="school-group" role="radiogroup" aria-label="Choose starting school"></div>
+          <p class="school-empty-note">School options will appear here once you provide the official list.</p>
         </div>
 
         <p id="create-message" class="message error-message"></p>
