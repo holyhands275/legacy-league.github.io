@@ -1,1 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Legacy League</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
 
+  <div id="app">
+
+    <!-- ══════════════════════════════════════
+         TITLE SCREEN
+    ══════════════════════════════════════ -->
+    <section id="title-screen" class="screen">
+
+      <div class="title-bg-deco" aria-hidden="true">
+        <div class="deco-ring ring-a"></div>
+        <div class="deco-ring ring-b"></div>
+        <div class="deco-ring ring-c"></div>
+      </div>
+
+      <div class="title-inner">
+        <div class="title-badge">EST. 2025</div>
+        <h1 class="hero-title">LEGACY<span>LEAGUE</span></h1>
+        <p class="tagline">Build your legacy from unknown prospect<br>to basketball legend.</p>
+
+        <div class="title-btn-group">
+          <button id="new-career-btn" class="primary-btn">▶ New Career</button>
+          <button id="continue-career-btn" class="secondary-btn">↺ Continue Career</button>
+          <button id="how-to-play-btn" class="secondary-btn ghost-btn">? How to Play</button>
+        </div>
+
+        <p id="title-message" class="message"></p>
+      </div>
+
+    </section>
+
+    <!-- ══════════════════════════════════════
+         HOW TO PLAY PANEL (modal)
+    ══════════════════════════════════════ -->
+    <div id="how-to-play-panel" class="modal-overlay hidden">
+      <div class="modal-box">
+        <div class="modal-head">
+          <h2>How to Play</h2>
+          <button id="close-how-to-play-btn" class="close-btn">✕</button>
+        </div>
+        <ul class="htp-list">
+          <li><span class="htp-icon">💪</span><span><strong>Train</strong> to improve your skills.</span></li>
+          <li><span class="htp-icon">🏀</span><span><strong>Play games</strong> to build your reputation.</span></li>
+          <li><span class="htp-icon">⚡</span><span><strong>Manage</strong> energy, money, followers, and draft stock.</span></li>
+          <li><span class="htp-icon">🧠</span><span><strong>Make decisions</strong> that affect your career.</span></li>
+          <li><span class="htp-icon">🌟</span><span><strong>Progress</strong> from high school to college / international basketball to the pros.</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════════
+         CHOOSE PATH SCREEN
+    ══════════════════════════════════════ -->
+    <section id="choose-path-screen" class="screen hidden">
+
+      <div class="screen-topbar">
+        <button id="back-to-title-btn" class="back-btn">← Back</button>
+        <span class="step-label">Step 1 of 2</span>
+      </div>
+
+      <div class="screen-content">
+        <h2 class="screen-heading">Choose Your Path</h2>
+        <p class="screen-sub">Every legend starts somewhere. Pick how your story begins.</p>
+
+        <div class="card-grid">
+
+          <div class="choice-card active-path" id="card-create-own">
+            <div class="choice-card-icon">✏️</div>
+            <div class="choice-card-text">
+              <h3>Create Your Own Player</h3>
+              <p>Build your own custom prospect from scratch.</p>
+            </div>
+            <button id="create-own-player-btn" class="primary-btn card-action-btn">Select →</button>
+          </div>
+
+          <div class="choice-card dimmed" id="card-prospect">
+            <div class="coming-soon-tag">Coming Soon</div>
+            <div class="choice-card-icon">⭐</div>
+            <div class="choice-card-text">
+              <h3>Choose Prospect</h3>
+              <p>Pick from fictional elite prospects with unique strengths and weaknesses.</p>
+            </div>
+            <button id="choose-prospect-btn" class="secondary-btn card-action-btn">Select →</button>
+          </div>
+
+          <div class="choice-card dimmed" id="card-international">
+            <div class="coming-soon-tag">Coming Soon</div>
+            <div class="choice-card-icon">🌍</div>
+            <div class="choice-card-text">
+              <h3>International Player</h3>
+              <p>Start as an overseas talent trying to make it on the big stage.</p>
+            </div>
+            <button id="international-player-btn" class="secondary-btn card-action-btn">Select →</button>
+          </div>
+
+          <div class="choice-card dimmed" id="card-random">
+            <div class="coming-soon-tag">Coming Soon</div>
+            <div class="choice-card-icon">🎲</div>
+            <div class="choice-card-text">
+              <h3>Random Player</h3>
+              <p>Let the game generate a mystery player, including rare hidden legends.</p>
+            </div>
+            <button id="random-player-btn" class="secondary-btn card-action-btn">Select →</button>
+          </div>
+
+        </div><!-- /card-grid -->
+
+        <p id="path-message" class="message"></p>
+      </div>
+
+    </section>
+
+    <!-- ══════════════════════════════════════
+         CREATE PLAYER SCREEN
+    ══════════════════════════════════════ -->
+    <section id="create-player-screen" class="screen hidden">
+
+      <div class="screen-topbar">
+        <button id="back-to-path-btn" class="back-btn">← Back</button>
+        <span class="step-label">Step 2 of 2</span>
+      </div>
+
+      <div class="screen-content">
+        <h2 class="screen-heading">Create Your Player</h2>
+        <p class="screen-sub">Design your first Legacy League prospect.</p>
+
+        <!-- Player Name -->
+        <div class="form-section">
+          <label class="field-label" for="player-name">Player Name</label>
+          <input
+            type="text"
+            id="player-name"
+            class="input-field"
+            placeholder="Enter your player name"
+            maxlength="32"
+          />
+        </div>
+
+        <!-- Position -->
+        <div class="form-section">
+          <label class="field-label">Position</label>
+          <div class="card-grid three-col" id="position-group">
+
+            <label class="choice-card sel-card">
+              <input type="radio" name="position" value="Guard" />
+              <div class="sel-card-inner">
+                <div class="sel-card-title">Guard</div>
+                <div class="sel-card-desc">Fast, skilled, and ball-dominant.</div>
+              </div>
+            </label>
+
+            <label class="choice-card sel-card">
+              <input type="radio" name="position" value="Wing" />
+              <div class="sel-card-inner">
+                <div class="sel-card-title">Wing</div>
+                <div class="sel-card-desc">Balanced scorer with size and versatility.</div>
+              </div>
+            </label>
+
+            <label class="choice-card sel-card">
+              <input type="radio" name="position" value="Big" />
+              <div class="sel-card-inner">
+                <div class="sel-card-title">Big</div>
+                <div class="sel-card-desc">Strong interior player who controls the paint.</div>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Archetype -->
+        <div class="form-section">
+          <label class="field-label">Archetype</label>
+          <div class="card-grid col-list" id="archetype-group">
+
+            <label class="choice-card sel-card sel-card-wide">
+              <input type="radio" name="archetype" value="Underrated Prospect" />
+              <div class="sel-card-inner">
+                <div class="sel-card-title">Underrated Prospect</div>
+                <div class="sel-card-desc">Small-town player nobody believes in. Starts with low popularity but strong work ethic and high potential.</div>
+              </div>
+            </label>
+
+            <label class="choice-card sel-card sel-card-wide">
+              <input type="radio" name="archetype" value="Athletic Freak" />
+              <div class="sel-card-inner">
+                <div class="sel-card-title">Athletic Freak</div>
+                <div class="sel-card-desc">Explosive athlete with elite physical tools. Great finishing and athleticism, but needs skill development.</div>
+              </div>
+            </label>
+
+            <label class="choice-card sel-card sel-card-wide">
+              <input type="radio" name="archetype" value="Overseas Talent" />
+              <div class="sel-card-inner">
+                <div class="sel-card-title">Overseas Talent</div>
+                <div class="sel-card-desc">Skilled international prospect adjusting to a new basketball culture. Strong IQ and fundamentals, but starts with lower popularity.</div>
+              </div>
+            </label>
+
+            <label class="choice-card sel-card sel-card-wide">
+              <input type="radio" name="archetype" value="Raw Beginner" />
+              <div class="sel-card-inner">
+                <div class="sel-card-title">Raw Beginner</div>
+                <div class="sel-card-desc">Late bloomer with limited experience but huge upside. Starts weak but has major growth potential.</div>
+              </div>
+            </label>
+
+            <label class="choice-card sel-card sel-card-wide">
+              <input type="radio" name="archetype" value="Coach's Kid" />
+              <div class="sel-card-inner">
+                <div class="sel-card-title">Coach's Kid</div>
+                <div class="sel-card-desc">Grew up around the game and understands basketball deeply. Strong IQ and decision-making, but less athletic.</div>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Style / Build -->
+        <div class="form-section">
+          <label class="field-label">Style / Build</label>
+          <div class="card-grid two-col" id="style-group">
+
+            <label class="choice-card sel-card">
+              <input type="radio" name="style" value="Small Guard" />
+              <div class="sel-card-inner">
+                <div class="sel-card-title">Small Guard</div>
+                <div class="sel-card-desc">Quick and crafty, but smaller.</div>
+              </div>
+            </label>
+
+            <label class="choice-card sel-card">
+              <input type="radio" name="style" value="Balanced Wing" />
+              <div class="sel-card-inner">
+                <div class="sel-card-title">Balanced Wing</div>
+                <div class="sel-card-desc">Versatile size and all-around style.</div>
+              </div>
+            </label>
+
+            <label class="choice-card sel-card">
+              <input type="radio" name="style" value="Athletic Wing" />
+              <div class="sel-card-inner">
+                <div class="sel-card-title">Athletic Wing</div>
+                <div class="sel-card-desc">Explosive and highlight-focused.</div>
+              </div>
+            </label>
+
+            <label class="choice-card sel-card">
+              <input type="radio" name="style" value="Big Man" />
+              <div class="sel-card-inner">
+                <div class="sel-card-title">Big Man</div>
+                <div class="sel-card-desc">Tall, strong, and paint-focused.</div>
+              </div>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Jersey Number -->
+        <div class="form-section">
+          <label class="field-label" for="jersey-number">Jersey Number</label>
+          <input
+            type="number"
+            id="jersey-number"
+            class="input-field jersey-input"
+            placeholder="23"
+            min="0"
+            max="99"
+          />
+        </div>
+
+        <p id="create-message" class="message error-message"></p>
+
+        <button id="start-career-btn" class="primary-btn full-btn">Start Career →</button>
+
+      </div><!-- /screen-content -->
+    </section>
+
+    <!-- ══════════════════════════════════════
+         DASHBOARD SCREEN
+    ══════════════════════════════════════ -->
+    <section id="dashboard-screen" class="screen hidden">
+      <div class="screen-content">
+
+        <h2 class="screen-heading">Career Dashboard</h2>
+
+        <div class="dashboard-card">
+          <div class="dash-jersey" id="dashboard-jersey">—</div>
+          <div class="dash-info">
+            <div class="dash-name" id="dashboard-player-name">—</div>
+            <div class="dash-meta">
+              <span id="dashboard-position">—</span>
+              &nbsp;·&nbsp;
+              <span id="dashboard-style">—</span>
+            </div>
+            <div class="dash-archetype" id="dashboard-archetype">—</div>
+          </div>
+        </div>
+
+        <div class="version-note">
+          <span class="version-pill">v0.1</span>
+          Version 0.1 complete. Training, games, and career decisions are coming next.
+        </div>
+
+        <button id="reset-career-btn" class="secondary-btn danger-btn">Reset Career</button>
+
+      </div>
+    </section>
+
+  </div><!-- /app -->
+
+  <script src="script.js"></script>
+</body>
+</html>
