@@ -126,25 +126,32 @@ function buildPlayer(name, position, archetype, style, jerseyNumber, character, 
   }
 
   // Style modifiers
-  if (style === 'Small Guard') {
+  if (style === 'Ball Handler') {
     player.stats.handles     += 6;
     player.stats.shooting    += 4;
     player.stats.finishing   -= 6;
-  } else if (style === 'Balanced Wing') {
+  } } else if (style === 'Rebounder') {
+    player.stats.defense     += 7;
+    player.stats.finishing   += 4;
+    player.stats.handles     -= 4;
+  } else if (style === 'Dunk Master') {
+    player.stats.athleticism += 8;
+    player.stats.finishing   += 8;
+    player.stats.shooting    -= 4;
+  } else if (style === 'Three Point Legend') {
+    player.stats.shooting    += 10;
+    player.stats.handles     += 3;
+    player.stats.finishing   -= 5;
+  } else if (style === 'Defensive Beast') {
+    player.stats.defense     += 10;
+    player.stats.athleticism += 4;
+    player.stats.shooting    -= 4;
+  } else if (style === 'All Around') {
     player.stats.shooting    += 2;
     player.stats.finishing   += 2;
     player.stats.handles     += 2;
     player.stats.defense     += 2;
-  } else if (style === 'Athletic Wing') {
-    player.stats.athleticism += 8;
-    player.stats.finishing   += 6;
-    player.stats.handles     -= 2;
-  } else if (style === 'Big Man') {
-    player.stats.defense     += 10;
-    player.stats.finishing   += 8;
-    player.stats.handles     -= 10;
-    player.stats.shooting    -= 6;
-  }
+  } 
 
   // Clamp stats 1–99
   var statKeys = Object.keys(player.stats);
@@ -238,7 +245,7 @@ function normalizePlayer(player) {
   return player;
 }
 
-var STARTING_SCHOOLS = [];
+var STARTING_SCHOOLS = ['Timber Creek', 'Keller Central', 'The Colony', 'Southlake Carrol', 'Frisco'];
 function renderSchoolOptions() {
   var group = document.getElementById('school-group');
   if (!group) return;
@@ -361,7 +368,12 @@ function updateDashboard(player) {
   set('dashboard-career-title', getCareerTitle(player));
   set('dashboard-stage',       player.stage || 'High School');
   set('dashboard-week',        'Week ' + player.week);
-
+  var avatarEl = document.getElementById('dashboard-character-image');
+  if (avatarEl && player.character && player.character.image) {
+    avatarEl.src = player.character.image;
+    avatarEl.alt = (player.character.title || 'Selected') + ' character portrait';
+  }
+   
   // Player info
   set('dashboard-position',      player.position);
   set('dashboard-archetype',     player.archetype);
@@ -537,8 +549,7 @@ document.getElementById('start-career-btn').addEventListener('click', function()
   var characterParts = characterEl.value.split('|');
   var selectedCharacter = {
     id: characterParts[0],
-    title: characterParts[1],
-    image: characterParts[2]
+    image: characterParts[1]
   };
   var player = buildPlayer(name, positionEl.value, archetypeEl.value, styleEl.value, jersey, selectedCharacter, schoolValue);
   if (schoolValue) player.team = schoolValue;
