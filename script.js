@@ -51,13 +51,15 @@ function loadCareer() {
 /* ════════════════════════════════════════════════════
    3. PLAYER CREATION  (v0.1 — unchanged)
    ════════════════════════════════════════════════════ */
-function buildPlayer(name, position, archetype, style, jerseyNumber) {
+function buildPlayer(name, position, archetype, style, jerseyNumber, character, startingSchool) {
   var player = {
     name:            name,
     position:        position,
     archetype:       archetype,
     style:           style,
     jerseyNumber:    jerseyNumber,
+    character:       character || null,
+    startingSchool:  startingSchool || '',
     stage:           'High School',
     age:             18,
     overall:         60,
@@ -182,6 +184,8 @@ function resetCreateForm() {
   document.querySelectorAll('input[name="position"]').forEach(function(r) { r.checked = false; });
   document.querySelectorAll('input[name="archetype"]').forEach(function(r) { r.checked = false; });
   document.querySelectorAll('input[name="style"]').forEach(function(r) { r.checked = false; });
+  document.querySelectorAll('input[name="character"]').forEach(function(r) { r.checked = false; });
+  document.querySelectorAll('input[name="school"]').forEach(function(r) { r.checked = false; });
   document.querySelectorAll('.sel-card.selected').forEach(function(c) { c.classList.remove('selected'); });
   clearMessage('create-message');
   clearMessage('path-message');
@@ -217,6 +221,8 @@ function normalizePlayer(player) {
   if (player.ppg           === undefined) player.ppg           = 0;
   if (player.seasonLabel   === undefined) player.seasonLabel   = 'Senior Season';
   if (player.team          === undefined) player.team          = 'Keller Central HS';
+  if (player.character     === undefined) player.character     = null;
+  if (player.startingSchool=== undefined) player.startingSchool= '';
   if (player.brandValue    === undefined) player.brandValue    = 0;
   if (player.investments   === undefined) player.investments   = 0;
   if (player.endorsements  === undefined) player.endorsements  = 0;
@@ -230,6 +236,21 @@ function normalizePlayer(player) {
   if (player.money         === undefined) player.money         = 0;
   if (player.age           === undefined) player.age           = 18;
   return player;
+}
+
+var STARTING_SCHOOLS = [];
+function renderSchoolOptions() {
+  var group = document.getElementById('school-group');
+  if (!group) return;
+  group.innerHTML = '';
+  STARTING_SCHOOLS.forEach(function(school) {
+    var label = document.createElement('label');
+    label.className = 'choice-card sel-card';
+    label.innerHTML = '<input type="radio" name="school" value="' + school + '" />' +
+      '<div class="sel-card-inner"><div class="sel-card-title">' + school + '</div>' +
+      '<div class="sel-card-desc">Start your journey here.</div></div>';
+    group.appendChild(label);
+  });
 }
 
 /* ── formatFollowers ── */
@@ -461,7 +482,7 @@ document.getElementById('back-to-path-btn').addEventListener('click', function()
 });
 
 // Selectable radio cards visual highlight
-var radioCardGroups = ['position-group', 'archetype-group', 'style-group'];
+var radioCardGroups = ['position-group', 'archetype-group', 'style-group', 'character-group', 'school-group'];
 radioCardGroups.forEach(function(groupId) {
   var group = document.getElementById(groupId);
   if (!group) return;
@@ -473,6 +494,16 @@ radioCardGroups.forEach(function(groupId) {
     });
   });
 });
+
+var jerseyInput = document.getElementById('jersey-number');
+if (jerseyInput) {
+  jerseyInput.addEventListener('input', function() {
+    var digits = this.value.replace(/\D/g, '').slice(0, 2);
+    if (digits === '') { this.value = ''; return; }
+    var n = Math.max(0, Math.min(99, parseInt(digits, 10)));
+    this.value = String(n);
+  });
+}
 
 document.getElementById('start-career-btn').addEventListener('click', function() {
   clearMessage('create-message');
@@ -491,7 +522,11 @@ document.getElementById('start-career-btn').addEventListener('click', function()
 
   var styleEl = document.querySelector('input[name="style"]:checked');
   if (!styleEl) { showMessage('create-message', 'Please choose a style.', 'error'); return; }
-
+  var characterEl = document.querySelector('input[name="character"]:checked');
+  if (!characterEl) { showMessage('create-message', 'Please choose a character.', 'error'); return; }
+  var schoolEl = document.querySelector('input[name="school"]:checked');
+  var schoolValue = schoolEl ? schoolEl.value : '';
+   
   var jerseyRaw = document.getElementById('jersey-number').value;
   var jersey    = jerseyRaw === '' ? 23 : parseInt(jerseyRaw, 10);
   if (isNaN(jersey) || jersey < 0 || jersey > 99) {
@@ -499,7 +534,14 @@ document.getElementById('start-career-btn').addEventListener('click', function()
     return;
   }
 
-  var player = buildPlayer(name, positionEl.value, archetypeEl.value, styleEl.value, jersey);
+  var characterParts = characterEl.value.split('|');
+  var selectedCharacter = {
+    id: characterParts[0],
+    title: characterParts[1],
+    image: characterParts[2]
+  };
+  var player = buildPlayer(name, positionEl.value, archetypeEl.value, styleEl.value, jersey, selectedCharacter, schoolValue);
+  if (schoolValue) player.team = schoolValue;
   normalizePlayer(player);
   currentPlayer = player;
   saveCareer(currentPlayer);
@@ -827,7 +869,8 @@ document.getElementById('reset-career-btn').addEventListener('click', function()
    ════════════════════════════════════════════════════ */
 (function init() {
   showScreen('title-screen');
-
+  renderSchoolOptions();
+   
   var saved = loadCareer();
   if (saved) {
     showMessage(
