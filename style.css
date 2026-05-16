@@ -360,7 +360,7 @@ body {
    ══════════════════════════════════════ */
 .card-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 14px;
   margin-bottom: 8px;
 }
@@ -659,6 +659,7 @@ body {
   line-height: 1.6;
   font-style: italic;
 }
+
 
 /* ── ATTRIBUTE BARS ── */
 .attribute-row { margin-bottom: 10px; }
