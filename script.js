@@ -130,7 +130,7 @@ function buildPlayer(name, position, archetype, style, jerseyNumber, character, 
     player.stats.handles     += 6;
     player.stats.shooting    += 4;
     player.stats.finishing   -= 6;
-  } } else if (style === 'Rebounder') {
+  } else if (style === 'Rebounder') {
     player.stats.defense     += 7;
     player.stats.finishing   += 4;
     player.stats.handles     -= 4;
