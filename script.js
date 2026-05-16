@@ -258,6 +258,7 @@ function renderSchoolOptions() {
       '<div class="sel-card-desc">Start your journey here.</div></div>';
     group.appendChild(label);
   });
+  bindSelectableCardGroup('school-group');
 }
 
 /* ── formatFollowers ── */
@@ -495,7 +496,8 @@ document.getElementById('back-to-path-btn').addEventListener('click', function()
 
 // Selectable radio cards visual highlight
 var radioCardGroups = ['position-group', 'archetype-group', 'style-group', 'character-group', 'school-group'];
-radioCardGroups.forEach(function(groupId) {
+
+function bindSelectableCardGroup(groupId) {
   var group = document.getElementById(groupId);
   if (!group) return;
   var cards = group.querySelectorAll('.sel-card');
@@ -505,7 +507,9 @@ radioCardGroups.forEach(function(groupId) {
       card.classList.add('selected');
     });
   });
-});
+}
+
+radioCardGroups.forEach(bindSelectableCardGroup);
 
 var jerseyInput = document.getElementById('jersey-number');
 if (jerseyInput) {
