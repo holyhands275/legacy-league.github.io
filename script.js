@@ -539,9 +539,7 @@ document.getElementById('start-career-btn').addEventListener('click', function()
   var styleEl = document.querySelector('input[name="style"]:checked');
   if (!styleEl) { showMessage('create-message', 'Please choose a style.', 'error'); return; }
   var characterEl = document.querySelector('input[name="character"]:checked');
-  if (!characterEl) {
-    characterEl = document.querySelector('input[name="character"]');
-  }
+  if (!characterEl) { showMessage('create-message', 'Please choose custom character.', 'error'); return; }
   var schoolEl = document.querySelector('input[name="school"]:checked');
   var schoolValue = schoolEl ? schoolEl.value : '';
    
