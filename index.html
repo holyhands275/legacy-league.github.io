@@ -163,6 +163,16 @@
               </div>
             </label>
           </div>
+            
+          <div class="form-section compact-form-section">
+            <label class="field-label" for="jersey-number">Jersey Number</label>
+            <input type="number" id="jersey-number" class="input-field jersey-input" placeholder="23" min="0" max="99" maxLength="2" inputmode="numeric" />
+          </div>
+
+          <div class="form-section compact-form-section">
+            <label class="field-label" for="school-select">Choose School</label>
+            <select id="school-select" class="input-field school-select" aria-label="Choose starting school"></select>
+          </div>
           </div>
 
           <div class="create-col">
@@ -256,11 +266,6 @@
         </div>
 
         <div class="form-section">
-          <label class="field-label" for="jersey-number">Jersey Number</label>
-          <input type="number" id="jersey-number" class="input-field jersey-input" placeholder="23" min="0" max="99" maxLength="2" inputmode="numeric" />
-        </div>
-
-        <div class="form-section">
           <label class="field-label">Choose Character</label>
           <div class="character-grid" id="character-group">
             <label class="character-card sel-card">
@@ -288,12 +293,6 @@
               <div class="character-media"><img src="https://picsum.photos/seed/legacy-char-6/220/280" alt="Paint Beast character" /></div>
             </label>
           </div>
-        </div>
-
-        <div class="form-section">
-          <label class="field-label">Choose Starting School</label>
-          <div class="school-group" id="school-group" role="radiogroup" aria-label="Choose starting school"></div>
-          <p class="school-empty-note">School options will appear here once you provide the official list.</p>
         </div>
 
         <p id="create-message" class="message error-message"></p>
