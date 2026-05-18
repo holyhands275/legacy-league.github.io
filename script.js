@@ -192,7 +192,8 @@ function resetCreateForm() {
   document.querySelectorAll('input[name="archetype"]').forEach(function(r) { r.checked = false; });
   document.querySelectorAll('input[name="style"]').forEach(function(r) { r.checked = false; });
   document.querySelectorAll('input[name="character"]').forEach(function(r) { r.checked = false; });
-  document.querySelectorAll('input[name="school"]').forEach(function(r) { r.checked = false; });
+  var schoolSelect = document.getElementById('school-select');
+  if (schoolSelect) schoolSelect.selectedIndex = 0;
   document.querySelectorAll('.sel-card.selected').forEach(function(c) { c.classList.remove('selected'); });
   clearMessage('create-message');
   clearMessage('path-message');
@@ -247,18 +248,15 @@ function normalizePlayer(player) {
 
 var STARTING_SCHOOLS = ['Timber Creek', 'Keller Central', 'The Colony', 'Southlake Carrol', 'Frisco'];
 function renderSchoolOptions() {
-  var group = document.getElementById('school-group');
-  if (!group) return;
-  group.innerHTML = '';
+  var schoolSelect = document.getElementById('school-select');
+  if (!schoolSelect) return;
+  schoolSelect.innerHTML = '<option value="">Select a school</option>';
   STARTING_SCHOOLS.forEach(function(school) {
-    var label = document.createElement('label');
-    label.className = 'choice-card sel-card';
-    label.innerHTML = '<input type="radio" name="school" value="' + school + '" />' +
-      '<div class="sel-card-inner"><div class="sel-card-title">' + school + '</div>' +
-      '<div class="sel-card-desc">Start your journey here.</div></div>';
-    group.appendChild(label);
+    var option = document.createElement('option');
+    option.value = school;
+    option.textContent = school;
+    schoolSelect.appendChild(option);
   });
-  bindSelectableCardGroup('school-group');
 }
 
 /* ── formatFollowers ── */
@@ -495,7 +493,7 @@ document.getElementById('back-to-path-btn').addEventListener('click', function()
 });
 
 // Selectable radio cards visual highlight
-var radioCardGroups = ['position-group', 'archetype-group', 'style-group', 'character-group', 'school-group'];
+var radioCardGroups = ['position-group', 'archetype-group', 'style-group', 'character-group'];
 
 function bindSelectableCardGroup(groupId) {
   var group = document.getElementById(groupId);
@@ -540,8 +538,9 @@ document.getElementById('start-career-btn').addEventListener('click', function()
   if (!styleEl) { showMessage('create-message', 'Please choose a style.', 'error'); return; }
   var characterEl = document.querySelector('input[name="character"]:checked');
   if (!characterEl) { showMessage('create-message', 'Please choose custom character.', 'error'); return; }
-  var schoolEl = document.querySelector('input[name="school"]:checked');
-  var schoolValue = schoolEl ? schoolEl.value : '';
+  var schoolValue = document.getElementById('school-select').value;
+  if (!schoolValue) { showMessage('create-message', 'Please choose a school.', 'error'); return; }
+
    
   var jerseyRaw = document.getElementById('jersey-number').value;
   var jersey    = jerseyRaw === '' ? 23 : parseInt(jerseyRaw, 10);
