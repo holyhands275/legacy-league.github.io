@@ -465,6 +465,18 @@ body {
 .character-meta { padding: 10px; }
 .character-card .sel-card-title { font-size: 13px; }
 .character-card .sel-card-desc { font-size: 11px; }
+
+.character-card.selected,
+.character-card input:checked ~ .character-media {
+  outline: 2px solid var(--orange);
+  outline-offset: -2px;
+}
+.character-card.selected .character-media img,
+.character-card input:checked ~ .character-media img {
+  filter: brightness(1.08);
+}
+.compact-form-section { margin-top: 14px; margin-bottom: 10px; }
+.school-select { max-width: 240px; }
 .dashboard-avatar {
   width: 56px;
   height: 56px;
