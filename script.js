@@ -338,8 +338,8 @@ function addStoryEvent(title, body, result) {
   // Insert at top of feed
   feed.insertBefore(card, feed.firstChild);
 
-  // Keep only latest 5 events
-  while (feed.children.length > 5) {
+  // Keep only latest 12 events
+  while (feed.children.length > 12) {
     feed.removeChild(feed.lastChild);
   }
 
