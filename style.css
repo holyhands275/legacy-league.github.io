@@ -812,7 +812,7 @@ body {
   flex-direction: column;
   gap: 10px;
   margin-bottom: 16px;
-  max-height: 340px;
+  max-height: 620px;
   overflow-y: auto;
   padding-right: 4px;
 }
