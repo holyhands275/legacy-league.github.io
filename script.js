@@ -10,7 +10,18 @@
 const SAVE_KEY = 'legacyLeagueSave';
 
 /* ════════════════════════════════════════════════════
-   1. SCREEN SYSTEM  (v0.1 — unchanged)
+   Constants
+   ════════════════════════════════════════════════════ */
+var REQUIRED_PLAYER_FIELDS = ['name', 'position', 'archetype', 'style', 'stats'];
+var REQUIRED_STAT_FIELDS = ['shooting', 'finishing', 'handles', 'defense', 'iq', 'athleticism'];
+
+/* ════════════════════════════════════════════════════
+   State
+   ════════════════════════════════════════════════════ */
+var currentPlayer = null;
+
+/* ════════════════════════════════════════════════════
+   UI helpers
    ════════════════════════════════════════════════════ */
 function showScreen(screenId) {
   var allScreens = document.querySelectorAll('.screen');
@@ -27,7 +38,7 @@ function showScreen(screenId) {
 }
 
 /* ════════════════════════════════════════════════════
-   2. SAVE / LOAD  (v0.1 — unchanged)
+   Save/load safety
    ════════════════════════════════════════════════════ */
 function saveCareer(player) {
   try {
@@ -41,7 +52,14 @@ function loadCareer() {
   try {
     var raw = localStorage.getItem(SAVE_KEY);
     if (!raw) return null;
-    return JSON.parse(raw);
+    var saved = JSON.parse(raw);
+    saved = normalizePlayer(saved);
+    saved = validatePlayer(saved);
+    if (!saved) {
+      console.warn('loadCareer: saved career is invalid/corrupted.');
+      return null;
+    }
+    return saved;
   } catch (e) {
     console.warn('loadCareer: failed to parse saved data.', e);
     return null;
@@ -49,7 +67,7 @@ function loadCareer() {
 }
 
 /* ════════════════════════════════════════════════════
-   3. PLAYER CREATION  (v0.1 — unchanged)
+   Player creation
    ════════════════════════════════════════════════════ */
 function buildPlayer(name, position, archetype, style, jerseyNumber, character, startingSchool) {
   var player = {
@@ -169,7 +187,7 @@ function buildPlayer(name, position, archetype, style, jerseyNumber, character, 
 }
 
 /* ════════════════════════════════════════════════════
-   4. HELPERS  (v0.1 — unchanged)
+   UI helpers
    ════════════════════════════════════════════════════ */
 function showMessage(elementId, text, type) {
   var el = document.getElementById(elementId);
@@ -183,6 +201,13 @@ function clearMessage(elementId) {
   if (!el) return;
   el.textContent = '';
   el.className   = 'message';
+}
+
+function onClick(id, handler) {
+  var el = document.getElementById(id);
+  if (!el) return false;
+  el.addEventListener('click', handler);
+  return true;
 }
 
 function resetCreateForm() {
@@ -203,12 +228,59 @@ function resetCreateForm() {
    v0.2 — NEW FUNCTIONS BELOW
    ════════════════════════════════════════════════════ */
 
-// Global reference to the currently loaded player
-var currentPlayer = null;
-
 /* ── clamp helper ── */
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+/* ── save/load safety helpers ── */
+function safeNumber(value, fallback, min, max) {
+  var n = Number(value);
+  if (!isFinite(n)) n = fallback;
+  if (typeof min === 'number') n = Math.max(min, n);
+  if (typeof max === 'number') n = Math.min(max, n);
+  return n;
+}
+
+function safeText(value, fallback, maxLength) {
+  var out = (typeof value === 'string' ? value : fallback);
+  out = out.trim();
+  if (!out) out = fallback;
+  if (typeof maxLength === 'number') out = out.slice(0, maxLength);
+  return out;
+}
+
+function validatePlayer(player) {
+  if (!player || typeof player !== 'object' || Array.isArray(player)) return null;
+
+  var hasRequiredFields = REQUIRED_PLAYER_FIELDS.every(function(field) {
+    return player[field] !== undefined && player[field] !== null;
+  });
+  if (!hasRequiredFields) return null;
+
+  if (!player.stats || typeof player.stats !== 'object' || Array.isArray(player.stats)) return null;
+
+  var statsAreNumbers = REQUIRED_STAT_FIELDS.every(function(stat) {
+    return typeof player.stats[stat] === 'number' && isFinite(player.stats[stat]);
+  });
+  if (!statsAreNumbers) return null;
+
+  player.name       = safeText(player.name, 'Unknown Player', 40);
+  player.position   = safeText(player.position, 'Guard', 20);
+  player.archetype  = safeText(player.archetype, 'Underrated Prospect', 40);
+  player.style      = safeText(player.style, 'All Around', 30);
+  player.energy     = safeNumber(player.energy, 100, 0, 100);
+  player.money      = safeNumber(player.money, 0, 0);
+  player.followers  = safeNumber(player.followers, 0, 0);
+  player.draftStock = safeNumber(player.draftStock, 0, 0, 150);
+  player.overall    = safeNumber(player.overall, 60, 1, 99);
+  player.week       = safeNumber(player.week, 1, 1);
+
+  REQUIRED_STAT_FIELDS.forEach(function(stat) {
+    player.stats[stat] = safeNumber(player.stats[stat], 50, 1, 99);
+  });
+
+  return player;
 }
 
 /* ── recalculate overall ── */
@@ -220,6 +292,7 @@ function recalculateOverall(player) {
 
 /* ── normalizePlayer — adds missing fields so old saves still work ── */
 function normalizePlayer(player) {
+  if (!player || typeof player !== 'object') return null;
   if (player.week          === undefined) player.week          = 1;
   if (player.maxWeeks      === undefined) player.maxWeeks      = 12;
   if (player.wins          === undefined) player.wins          = 0;
@@ -243,6 +316,39 @@ function normalizePlayer(player) {
   if (player.draftStock    === undefined) player.draftStock    = 0;
   if (player.money         === undefined) player.money         = 0;
   if (player.age           === undefined) player.age           = 18;
+   
+  // Safety normalization keeps old saves compatible while clamping risky values.
+  player.name         = safeText(player.name, 'Unknown Player', 40);
+  player.position     = safeText(player.position, 'Guard', 20);
+  player.archetype    = safeText(player.archetype, 'Underrated Prospect', 40);
+  player.style        = safeText(player.style, 'All Around', 30);
+  player.team         = safeText(player.team, 'Keller Central HS', 60);
+  player.reputation   = safeText(player.reputation, 'Unknown', 30);
+  player.injuryStatus = safeText(player.injuryStatus, 'Healthy', 30);
+  player.stage        = safeText(player.stage, 'High School', 30);
+  player.seasonLabel  = safeText(player.seasonLabel, 'Senior Season', 40);
+
+  player.week         = safeNumber(player.week, 1, 1);
+  player.maxWeeks     = safeNumber(player.maxWeeks, 12, 1);
+  player.wins         = safeNumber(player.wins, 0, 0);
+  player.losses       = safeNumber(player.losses, 0, 0);
+  player.gamesPlayed  = safeNumber(player.gamesPlayed, 0, 0);
+  player.totalPoints  = safeNumber(player.totalPoints, 0, 0);
+  player.ppg          = safeNumber(player.ppg, 0, 0);
+  player.brandValue   = safeNumber(player.brandValue, 0, 0);
+  player.investments  = safeNumber(player.investments, 0, 0);
+  player.endorsements = safeNumber(player.endorsements, 0, 0);
+  player.legacyScore  = safeNumber(player.legacyScore, 0, 0);
+  player.followers    = safeNumber(player.followers, 0, 0);
+  player.energy       = safeNumber(player.energy, 100, 0, 100);
+  player.draftStock   = safeNumber(player.draftStock, 0, 0, 150);
+  player.money        = safeNumber(player.money, 0, 0);
+  player.age          = safeNumber(player.age, 18, 14, 60);
+
+  if (!player.stats || typeof player.stats !== 'object' || Array.isArray(player.stats)) player.stats = {};
+  REQUIRED_STAT_FIELDS.forEach(function(stat) {
+    player.stats[stat] = safeNumber(player.stats[stat], 50, 1, 99);
+  });
   return player;
 }
 
@@ -250,7 +356,11 @@ var STARTING_SCHOOLS = ['Timber Creek', 'Keller Central', 'The Colony', 'Southla
 function renderSchoolOptions() {
   var schoolSelect = document.getElementById('school-select');
   if (!schoolSelect) return;
-  schoolSelect.innerHTML = '<option value="">Select a school</option>';
+  schoolSelect.textContent = '';
+  var placeholderOption = document.createElement('option');
+  placeholderOption.value = '';
+  placeholderOption.textContent = 'Select a school';
+  schoolSelect.appendChild(placeholderOption);
   STARTING_SCHOOLS.forEach(function(school) {
     var option = document.createElement('option');
     option.value = school;
@@ -258,7 +368,6 @@ function renderSchoolOptions() {
     schoolSelect.appendChild(option);
   });
 }
-
 /* ── formatFollowers ── */
 function formatFollowers(n) {
   if (n >= 1000000) return (n / 1000000).toFixed(1).replace(/\.0$/, '') + 'M';
@@ -350,7 +459,7 @@ function addStoryEvent(title, body, result) {
 }
 
 /* ════════════════════════════════════════════════════
-   5. updateDashboard  (replaces v0.1 version entirely)
+   Dashboard rendering
    ════════════════════════════════════════════════════ */
 function updateDashboard(player) {
   function set(id, val) {
@@ -418,16 +527,15 @@ function updateDashboard(player) {
 }
 
 /* ════════════════════════════════════════════════════
-   6. TITLE SCREEN BUTTONS  (v0.1 — mostly unchanged,
-      updated to use normalizePlayer + addStoryEvent)
+   Button events
    ════════════════════════════════════════════════════ */
-document.getElementById('new-career-btn').addEventListener('click', function() {
+onClick('new-career-btn', function() {
   clearMessage('title-message');
   resetCreateForm();
   showScreen('choose-path-screen');
 });
 
-document.getElementById('continue-career-btn').addEventListener('click', function() {
+onClick('continue-career-btn', function() {
   var saved = loadCareer();
   if (saved) {
     normalizePlayer(saved);
@@ -440,46 +548,50 @@ document.getElementById('continue-career-btn').addEventListener('click', functio
   }
 });
 
-document.getElementById('how-to-play-btn').addEventListener('click', function() {
+onClick('how-to-play-btn', function() {
   document.getElementById('how-to-play-panel').classList.remove('hidden');
 });
 
-document.getElementById('close-how-to-play-btn').addEventListener('click', function() {
+onClick('close-how-to-play-btn', function() {
   document.getElementById('how-to-play-panel').classList.add('hidden');
 });
 
-document.getElementById('how-to-play-panel').addEventListener('click', function(e) {
-  if (e.target === this) this.classList.add('hidden');
-});
+var howToPlayPanelEl = document.getElementById('how-to-play-panel');
+if (howToPlayPanelEl) {
+  howToPlayPanelEl.addEventListener('click', function(e) {
+    if (e.target === this) this.classList.add('hidden');
+  });
+}
 
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') {
-    document.getElementById('how-to-play-panel').classList.add('hidden');
+    var panel = document.getElementById('how-to-play-panel');
+    if (panel) panel.classList.add('hidden');
   }
 });
 
 /* ════════════════════════════════════════════════════
    7. CHOOSE PATH BUTTONS  (v0.1 — unchanged)
    ════════════════════════════════════════════════════ */
-document.getElementById('back-to-title-btn').addEventListener('click', function() {
+onClick('back-to-title-btn', function() {
   clearMessage('path-message');
   showScreen('title-screen');
 });
 
-document.getElementById('create-own-player-btn').addEventListener('click', function() {
+onClick('create-own-player-btn', function() {
   clearMessage('path-message');
   showScreen('create-player-screen');
 });
 
-document.getElementById('choose-prospect-btn').addEventListener('click', function() {
+onClick('choose-prospect-btn', function() {
   showMessage('path-message', 'Choose Prospect is coming soon.', '');
 });
 
-document.getElementById('international-player-btn').addEventListener('click', function() {
+onClick('international-player-btn', function() {
   showMessage('path-message', 'International Player is coming soon.', '');
 });
 
-document.getElementById('random-player-btn').addEventListener('click', function() {
+onClick('random-player-btn', function() {
   showMessage('path-message', 'Random Player is coming soon.', '');
 });
 
@@ -487,7 +599,7 @@ document.getElementById('random-player-btn').addEventListener('click', function(
    8. CREATE PLAYER SCREEN  (v0.1 — unchanged logic,
       updated to normalize + welcome event)
    ════════════════════════════════════════════════════ */
-document.getElementById('back-to-path-btn').addEventListener('click', function() {
+onClick('back-to-path-btn', function() {
   clearMessage('create-message');
   showScreen('choose-path-screen');
 });
@@ -519,7 +631,7 @@ if (jerseyInput) {
   });
 }
 
-document.getElementById('start-career-btn').addEventListener('click', function() {
+onClick('start-career-btn', function() {
   clearMessage('create-message');
 
   var name = document.getElementById('player-name').value.trim();
@@ -571,11 +683,11 @@ document.getElementById('start-career-btn').addEventListener('click', function()
 });
 
 /* ════════════════════════════════════════════════════
-   9. DASHBOARD ACTION BUTTONS  (v0.2 — new)
+   Game actions
    ════════════════════════════════════════════════════ */
 
 /* ── Train ── */
-document.getElementById('train-btn').addEventListener('click', function() {
+onClick('train-btn', function() {
   if (!currentPlayer) return;
   if (currentPlayer.energy < 15) {
     showDashboardMessage('Not enough energy to train. Rest first.', 'error');
@@ -604,7 +716,7 @@ document.getElementById('train-btn').addEventListener('click', function() {
 });
 
 /* ── Play Game ── */
-document.getElementById('play-game-btn').addEventListener('click', function() {
+onClick('play-game-btn', function() {
   if (!currentPlayer) return;
   if (currentPlayer.energy < 25) {
     showDashboardMessage('Not enough energy to play. Rest first.', 'error');
@@ -648,7 +760,7 @@ document.getElementById('play-game-btn').addEventListener('click', function() {
 });
 
 /* ── Rest ── */
-document.getElementById('rest-btn').addEventListener('click', function() {
+onClick('rest-btn', function() {
   if (!currentPlayer) return;
 
   currentPlayer.energy = clamp(currentPlayer.energy + 25, 0, 100);
@@ -664,7 +776,7 @@ document.getElementById('rest-btn').addEventListener('click', function() {
 });
 
 /* ── Social Media ── */
-document.getElementById('social-media-btn').addEventListener('click', function() {
+onClick('social-media-btn', function() {
   if (!currentPlayer) return;
   if (currentPlayer.energy < 10) {
     showDashboardMessage('Not enough energy for social media. Rest first.', 'error');
@@ -687,7 +799,7 @@ document.getElementById('social-media-btn').addEventListener('click', function()
 });
 
 /* ── Buy Gear ── */
-document.getElementById('buy-gear-btn').addEventListener('click', function() {
+onClick('buy-gear-btn', function() {
   if (!currentPlayer) return;
   if (currentPlayer.money < 100) {
     showDashboardMessage('Not enough money to buy gear.', 'error');
@@ -711,7 +823,7 @@ document.getElementById('buy-gear-btn').addEventListener('click', function() {
 });
 
 /* ── Invest Money ── */
-document.getElementById('invest-money-btn').addEventListener('click', function() {
+onClick('invest-money-btn', function() {
   if (!currentPlayer) return;
   if (currentPlayer.money < 250) {
     showDashboardMessage('You need at least $250 to invest.', 'error');
@@ -733,7 +845,7 @@ document.getElementById('invest-money-btn').addEventListener('click', function()
 });
 
 /* ── Build Brand ── */
-document.getElementById('build-brand-btn').addEventListener('click', function() {
+onClick('build-brand-btn', function() {
   if (!currentPlayer) return;
   if (currentPlayer.energy < 20) {
     showDashboardMessage('Not enough energy to build brand. Rest first.', 'error');
@@ -834,7 +946,7 @@ function endSeason(player) {
 }
 
 /* ── Advance Week button ── */
-document.getElementById('advance-week-btn').addEventListener('click', function() {
+onClick('advance-week-btn', function() {
   if (!currentPlayer) return;
 
   if (currentPlayer.week >= currentPlayer.maxWeeks) {
@@ -856,20 +968,20 @@ document.getElementById('advance-week-btn').addEventListener('click', function()
    ════════════════════════════════════════════════════ */
 
 /* ── Save Career ── */
-document.getElementById('save-career-btn').addEventListener('click', function() {
+onClick('save-career-btn', function() {
   if (!currentPlayer) return;
   saveCareer(currentPlayer);
   showDashboardMessage('Career saved.', '');
 });
 
 /* ── Back to Title from Dashboard ── */
-document.getElementById('back-to-title-from-dashboard-btn').addEventListener('click', function() {
+onClick('back-to-title-from-dashboard-btn', function() {
   if (currentPlayer) saveCareer(currentPlayer);
   showScreen('title-screen');
 });
 
 /* ── Reset Career (button moved to management panel, behavior same as v0.1) ── */
-document.getElementById('reset-career-btn').addEventListener('click', function() {
+onClick('reset-career-btn', function() {
   if (!window.confirm('Reset your career? All progress will be lost.')) return;
   try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
   currentPlayer = null;
