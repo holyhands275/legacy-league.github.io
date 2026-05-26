@@ -556,7 +556,7 @@ body {
   .card-grid { grid-template-columns: 1fr; }
   .card-grid.three-col { grid-template-columns: 1fr; }
   .card-grid.two-col   { grid-template-columns: 1fr; }
-  create-two-col-layout { grid-template-columns: 1fr; }
+  .create-two-col-layout { grid-template-columns: 1fr; }
   .character-grid { grid-template-columns: 1fr 1fr; }
   .school-group { grid-template-columns: 1fr 1fr; }
 }
