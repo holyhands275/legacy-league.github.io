@@ -14,6 +14,32 @@ const SAVE_KEY = 'legacyLeagueSave';
    ════════════════════════════════════════════════════ */
 var REQUIRED_PLAYER_FIELDS = ['name', 'position', 'archetype', 'style', 'stats'];
 var REQUIRED_STAT_FIELDS = ['shooting', 'finishing', 'handles', 'defense', 'iq', 'athleticism'];
+var STYLE_STATS = {
+  'Ball Handler': {
+    stats: { shooting: 10, finishing: 5, handles: 15, defense: 5, iq: 15, athleticism: 10 },
+    caps:  { shooting: 95, finishing: 90, handles: 100, defense: 80, iq: 95, athleticism: 90 }
+  },
+  'Rebounder': {
+    stats: { shooting: 5, finishing: 10, handles: 0, defense: 15, iq: 10, athleticism: 5 },
+    caps:  { shooting: 90, finishing: 90, handles: 80, defense: 95, iq: 100, athleticism: 95 }
+  },
+  'Dunk Master': {
+    stats: { shooting: 10, finishing: 15, handles: 5, defense: 10, iq: 5, athleticism: 10 },
+    caps:  { shooting: 85, finishing: 100, handles: 85, defense: 90, iq: 90, athleticism: 100 }
+  },
+  'Three Point Legend': {
+    stats: { shooting: 15, finishing: 10, handles: 10, defense: 0, iq: 5, athleticism: 5 },
+    caps:  { shooting: 100, finishing: 95, handles: 90, defense: 80, iq: 95, athleticism: 90 }
+  },
+  'Defensive Beast': {
+    stats: { shooting: 5, finishing: 5, handles: 10, defense: 15, iq: 10, athleticism: 5 },
+    caps:  { shooting: 90, finishing: 85, handles: 90, defense: 100, iq: 90, athleticism: 95 }
+  },
+  'All Around': {
+    stats: { shooting: 10, finishing: 10, handles: 10, defense: 10, iq: 10, athleticism: 10 },
+    caps:  { shooting: 90, finishing: 90, handles: 90, defense: 90, iq: 95, athleticism: 95 }
+  }
+};
 
 /* ════════════════════════════════════════════════════
    State
@@ -70,6 +96,7 @@ function loadCareer() {
    Player creation
    ════════════════════════════════════════════════════ */
 function buildPlayer(name, position, archetype, style, jerseyNumber, character, startingSchool) {
+  var styleConfig = STYLE_STATS[style] || STYLE_STATS['All Around'];
   var player = {
     name:            name,
     position:        position,
@@ -86,6 +113,7 @@ function buildPlayer(name, position, archetype, style, jerseyNumber, character, 
     energy:          100,
     draftStock:      0,
     hiddenPotential: 0,
+    height:          generateHeight(position),
     stats: {
       shooting:    50,
       finishing:   50,
@@ -93,25 +121,33 @@ function buildPlayer(name, position, archetype, style, jerseyNumber, character, 
       defense:     50,
       iq:          50,
       athleticism: 50
+   },
+    caps: {
+      shooting:    styleConfig.caps.shooting,
+      finishing:   styleConfig.caps.finishing,
+      handles:     styleConfig.caps.handles,
+      defense:     styleConfig.caps.defense,
+      iq:          styleConfig.caps.iq,
+      athleticism: styleConfig.caps.athleticism
     }
   };
 
   // Position modifiers
   if (position === 'Guard') {
-    player.stats.handles     += 8;
-    player.stats.shooting    += 6;
-    player.stats.athleticism += 4;
-    player.stats.finishing   -= 4;
-  } else if (position === 'Wing') {
-    player.stats.shooting    += 4;
-    player.stats.finishing   += 4;
+    player.stats.handles     += 3;
+    player.stats.shooting    += 2;
     player.stats.athleticism += 3;
-    player.stats.defense     += 3;
+    player.stats.finishing   -= 2;
+  } else if (position === 'Wing') {
+    player.stats.shooting    += 2;
+    player.stats.finishing   += 2;
+    player.stats.athleticism += 1;
+    player.stats.defense     += 1;
   } else if (position === 'Big') {
-    player.stats.finishing   += 10;
-    player.stats.defense     += 8;
-    player.stats.handles     -= 6;
-    player.stats.shooting    -= 4;
+    player.stats.finishing   += 4;
+    player.stats.defense     += 5;
+    player.stats.handles     -= 2;
+    player.stats.shooting    -= 1;
   }
 
   // Archetype modifiers
@@ -144,32 +180,12 @@ function buildPlayer(name, position, archetype, style, jerseyNumber, character, 
   }
 
   // Style modifiers
-  if (style === 'Ball Handler') {
-    player.stats.handles     += 6;
-    player.stats.shooting    += 4;
-    player.stats.finishing   -= 6;
-  } else if (style === 'Rebounder') {
-    player.stats.defense     += 7;
-    player.stats.finishing   += 4;
-    player.stats.handles     -= 4;
-  } else if (style === 'Dunk Master') {
-    player.stats.athleticism += 8;
-    player.stats.finishing   += 8;
-    player.stats.shooting    -= 4;
-  } else if (style === 'Three Point Legend') {
-    player.stats.shooting    += 10;
-    player.stats.handles     += 3;
-    player.stats.finishing   -= 5;
-  } else if (style === 'Defensive Beast') {
-    player.stats.defense     += 10;
-    player.stats.athleticism += 4;
-    player.stats.shooting    -= 4;
-  } else if (style === 'All Around') {
-    player.stats.shooting    += 2;
-    player.stats.finishing   += 2;
-    player.stats.handles     += 2;
-    player.stats.defense     += 2;
-  } 
+  player.stats.shooting    += styleConfig.stats.shooting;
+  player.stats.finishing   += styleConfig.stats.finishing;
+  player.stats.handles     += styleConfig.stats.handles;
+  player.stats.defense     += styleConfig.stats.defense;
+  player.stats.iq          += styleConfig.stats.iq;
+  player.stats.athleticism += styleConfig.stats.athleticism;
 
   // Clamp stats 1–99
   var statKeys = Object.keys(player.stats);
@@ -231,6 +247,23 @@ function resetCreateForm() {
 /* ── clamp helper ── */
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, value));
+}
+
+function generateHeight(positionGroup) {
+  var heightRanges = {
+    Guard: [72, 76],
+    Wing: [76, 80],
+    Big: [80, 86]
+  };
+
+  var range = heightRanges[positionGroup] || heightRanges.Wing;
+  var min = range[0];
+  var max = range[1];
+  var inches = Math.floor(Math.random() * (max - min + 1)) + min;
+  var feet = Math.floor(inches / 12);
+  var remainingInches = inches % 12;
+
+  return feet + "'" + remainingInches;
 }
 
 /* ── save/load safety helpers ── */
