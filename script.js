@@ -115,12 +115,12 @@ function buildPlayer(name, position, archetype, style, jerseyNumber, character, 
     hiddenPotential: 0,
     height:          generateHeight(position),
     stats: {
-      shooting:    50,
-      finishing:   50,
-      handles:     50,
-      defense:     50,
-      iq:          50,
-      athleticism: 50
+      shooting: styleConfig.stats.shooting,
+      finishing: styleConfig.stats.finishing,
+      handles: styleConfig.stats.handles,
+      defense: styleConfig.stats.defense,
+      iq: styleConfig.stats.iq,
+      athleticism: styleConfig.stats.athleticism
    },
     caps: {
       shooting:    styleConfig.caps.shooting,
@@ -149,14 +149,6 @@ function buildPlayer(name, position, archetype, style, jerseyNumber, character, 
     player.stats.handles     -= 2;
     player.stats.shooting    -= 1;
   }
-
-  // Style modifiers
-  player.stats.shooting    += styleConfig.stats.shooting;
-  player.stats.finishing   += styleConfig.stats.finishing;
-  player.stats.handles     += styleConfig.stats.handles;
-  player.stats.defense     += styleConfig.stats.defense;
-  player.stats.iq          += styleConfig.stats.iq;
-  player.stats.athleticism += styleConfig.stats.athleticism;
 
   // Clamp stats 1–99
   var statKeys = Object.keys(player.stats);
@@ -498,7 +490,7 @@ function updateDashboard(player) {
   stats.forEach(function(s) {
     set('stat-' + s, player.stats[s]);
     var bar = document.getElementById('bar-' + s);
-    if (bar) bar.style.width = player.stats[s] + '%';
+    if (bar) bar.style.width = Math.min(player.stats[s], 100) + '%';
   });
 
   // Capital
