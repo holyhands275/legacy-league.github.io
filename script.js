@@ -150,35 +150,6 @@ function buildPlayer(name, position, archetype, style, jerseyNumber, character, 
     player.stats.shooting    -= 1;
   }
 
-  // Archetype modifiers
-  if (archetype === 'Underrated Prospect') {
-    player.stats.iq          += 8;
-    player.followers          = 200;
-    player.hiddenPotential    = 85;
-  } else if (archetype === 'Athletic Freak') {
-    player.stats.athleticism += 12;
-    player.stats.finishing   += 8;
-    player.stats.shooting    -= 8;
-    player.stats.iq          -= 4;
-  } else if (archetype === 'Overseas Talent') {
-    player.stats.iq          += 8;
-    player.stats.shooting    += 6;
-    player.followers          = 300;
-  } else if (archetype === 'Raw Beginner') {
-    player.stats.shooting    -= 8;
-    player.stats.finishing   -= 6;
-    player.stats.handles     -= 6;
-    player.stats.defense     -= 4;
-    player.stats.iq          -= 4;
-    player.stats.athleticism -= 2;
-    player.hiddenPotential    = 99;
-    player.overall            = 48;
-  } else if (archetype === "Coach's Kid") {
-    player.stats.iq          += 12;
-    player.stats.handles     += 6;
-    player.stats.athleticism -= 8;
-  }
-
   // Style modifiers
   player.stats.shooting    += styleConfig.stats.shooting;
   player.stats.finishing   += styleConfig.stats.finishing;
@@ -194,10 +165,8 @@ function buildPlayer(name, position, archetype, style, jerseyNumber, character, 
   });
 
   // Recalculate overall
-  if (archetype !== 'Raw Beginner') {
-    var sum = statKeys.reduce(function(acc, key) { return acc + player.stats[key]; }, 0);
-    player.overall = Math.round(sum / statKeys.length);
-  }
+  var sum = statKeys.reduce(function(acc, key) { return acc + player.stats[key]; }, 0);
+  player.overall = Math.round(sum / statKeys.length);
 
   return player;
 }
