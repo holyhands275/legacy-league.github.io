@@ -414,6 +414,13 @@ function showDashboardMessage(text, type) {
   setTimeout(function() { clearMessage('dashboard-message'); }, 3000);
 }
 
+/* ── clearStoryFeed ── */
+function clearStoryFeed() {
+  var feed = document.getElementById('story-feed');
+  if (!feed) return;
+  feed.textContent = '';
+}
+
 /* ── addStoryEvent ── */
 function addStoryEvent(title, body, result) {
   var feed = document.getElementById('story-feed');
@@ -526,6 +533,7 @@ function updateDashboard(player) {
 onClick('new-career-btn', function() {
   clearMessage('title-message');
   resetCreateForm();
+  clearStoryFeed();
   showScreen('choose-path-screen');
 });
 
@@ -666,14 +674,8 @@ onClick('start-career-btn', function() {
   currentPlayer = player;
   saveCareer(currentPlayer);
   updateDashboard(currentPlayer);
+  clearStoryFeed();
   showScreen('dashboard-screen');
-
-  // Welcome story event
-  addStoryEvent(
-    'Your Legacy Begins',
-    'You enter your senior season with everything to prove.',
-    'Train, play games, and build your name.'
-  );
 });
 
 /* ════════════════════════════════════════════════════
@@ -980,6 +982,7 @@ onClick('reset-career-btn', function() {
   try { localStorage.removeItem(SAVE_KEY); } catch(e) {}
   currentPlayer = null;
   resetCreateForm();
+  clearStoryFeed();
   showScreen('title-screen');
   clearMessage('title-message');
 });
