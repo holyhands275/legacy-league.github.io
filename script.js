@@ -14,6 +14,25 @@ const SAVE_KEY = 'legacyLeagueSave';
    ════════════════════════════════════════════════════ */
 var REQUIRED_PLAYER_FIELDS = ['name', 'position', 'archetype', 'style', 'stats'];
 var REQUIRED_STAT_FIELDS = ['shooting', 'finishing', 'handles', 'defense', 'iq', 'athleticism'];
+var CAREER_CALENDARS = {
+  highSchoolSenior: [
+    { phase: 'Preseason', weeks: 4 },
+    { phase: 'Regular Season', weeks: 16 },
+    { phase: 'Offseason', weeks: 0 }
+  ],
+  collegeSeason: [
+    { phase: 'Preseason', weeks: 4 },
+    { phase: 'Regular Season', weeks: 16 },
+    { phase: 'Offseason', weeks: 0 }
+  ],
+  proSeason: [
+    { phase: 'Preseason', weeks: 4 },
+    { phase: 'Regular Season', weeks: 16 },
+    { phase: 'Offseason', weeks: 0 }
+  ]
+};
+var DEFAULT_CAREER_CALENDAR_KEY = 'highSchoolSenior';
+
 var STYLE_STATS = {
   'Ball Handler': {
     stats: { shooting: 10, finishing: 5, handles: 15, defense: 5, iq: 15, athleticism: 10 },
@@ -114,6 +133,12 @@ function buildPlayer(name, position, archetype, style, jerseyNumber, character, 
     draftStock:      0,
     hiddenPotential: 0,
     height:          generateHeight(position),
+    calendarKey:     DEFAULT_CAREER_CALENDAR_KEY,
+    currentPhaseIndex: 0,
+    currentWeek:     1,
+    currentPhaseName: CAREER_CALENDARS[DEFAULT_CAREER_CALENDAR_KEY][0].phase,
+    week:            1,
+    maxWeeks:        getCalendarTotalNumberedWeeks(DEFAULT_CAREER_CALENDAR_KEY),
     stats: {
       shooting: styleConfig.stats.shooting,
       finishing: styleConfig.stats.finishing,
@@ -268,7 +293,8 @@ function validatePlayer(player) {
   player.followers  = safeNumber(player.followers, 0, 0);
   player.draftStock = safeNumber(player.draftStock, 0, 0, 150);
   player.overall    = safeNumber(player.overall, 60, 1, 99);
-  player.week       = safeNumber(player.week, 1, 1);
+  normalizeCalendarState(player);
+  player.week       = safeNumber(player.week, player.currentWeek || 1, 1);
 
   REQUIRED_STAT_FIELDS.forEach(function(stat) {
     player.stats[stat] = safeNumber(player.stats[stat], 50, 1, 99);
@@ -287,8 +313,16 @@ function recalculateOverall(player) {
 /* ── normalizePlayer — adds missing fields so old saves still work ── */
 function normalizePlayer(player) {
   if (!player || typeof player !== 'object') return null;
-  if (player.week          === undefined) player.week          = 1;
-  if (player.maxWeeks      === undefined) player.maxWeeks      = 12;
+  var needsCalendarMigration = player.currentPhaseIndex === undefined || player.currentWeek === undefined;
+  if (player.calendarKey   === undefined) player.calendarKey   = DEFAULT_CAREER_CALENDAR_KEY;
+  if (needsCalendarMigration) {
+    migrateSimpleWeekToCalendarState(player);
+  }
+  if (player.currentPhaseIndex === undefined) player.currentPhaseIndex = 0;
+  if (player.currentWeek   === undefined) player.currentWeek   = player.week || 1;
+  if (player.currentPhaseName === undefined) player.currentPhaseName = '';
+  if (player.week          === undefined) player.week          = player.currentWeek || 1;
+  if (player.maxWeeks      === undefined) player.maxWeeks      = getCalendarTotalNumberedWeeks(player.calendarKey);
   if (player.wins          === undefined) player.wins          = 0;
   if (player.losses        === undefined) player.losses        = 0;
   if (player.gamesPlayed   === undefined) player.gamesPlayed   = 0;
@@ -322,8 +356,9 @@ function normalizePlayer(player) {
   player.stage        = safeText(player.stage, 'High School', 30);
   player.seasonLabel  = safeText(player.seasonLabel, 'Senior Season', 40);
 
-  player.week         = safeNumber(player.week, 1, 1);
-  player.maxWeeks     = safeNumber(player.maxWeeks, 12, 1);
+  normalizeCalendarState(player);
+  player.week         = safeNumber(player.week, player.currentWeek || 1, 1);
+  player.maxWeeks     = safeNumber(player.maxWeeks, getCalendarTotalNumberedWeeks(player.calendarKey), 1);
   player.wins         = safeNumber(player.wins, 0, 0);
   player.losses       = safeNumber(player.losses, 0, 0);
   player.gamesPlayed  = safeNumber(player.gamesPlayed, 0, 0);
@@ -459,6 +494,109 @@ function addStoryEvent(title, body, result) {
   }
 }
 
+
+/* ════════════════════════════════════════════════════
+   Calendar helpers
+   ════════════════════════════════════════════════════ */
+function getCareerCalendar(playerOrKey) {
+  var key = typeof playerOrKey === 'string' ? playerOrKey : (playerOrKey && playerOrKey.calendarKey);
+  return CAREER_CALENDARS[key] || CAREER_CALENDARS[DEFAULT_CAREER_CALENDAR_KEY];
+}
+
+function getCalendarTotalNumberedWeeks(playerOrKey) {
+  return getCareerCalendar(playerOrKey).reduce(function(total, phase) {
+    return total + Math.max(0, phase.weeks || 0);
+  }, 0);
+}
+
+function migrateSimpleWeekToCalendarState(player) {
+  var calendar = getCareerCalendar(player);
+  var oldWeek = safeNumber(player.week, 1, 1);
+  var countedWeeks = 0;
+
+  for (var i = 0; i < calendar.length; i += 1) {
+    var phaseWeeks = Math.max(0, calendar[i].weeks || 0);
+    if (phaseWeeks === 0 || oldWeek <= countedWeeks + phaseWeeks) {
+      player.currentPhaseIndex = i;
+      player.currentWeek = phaseWeeks > 0 ? oldWeek - countedWeeks : 0;
+      player.currentPhaseName = calendar[i].phase;
+      return;
+    }
+    countedWeeks += phaseWeeks;
+  }
+
+  player.currentPhaseIndex = calendar.length - 1;
+  player.currentWeek = 0;
+  player.currentPhaseName = calendar[calendar.length - 1].phase;
+}
+
+function normalizeCalendarState(player) {
+  if (!player || typeof player !== 'object') return;
+
+  player.calendarKey = safeText(player.calendarKey, DEFAULT_CAREER_CALENDAR_KEY, 40);
+  if (!CAREER_CALENDARS[player.calendarKey]) player.calendarKey = DEFAULT_CAREER_CALENDAR_KEY;
+
+  var calendar = getCareerCalendar(player);
+  var phaseIndex = safeNumber(player.currentPhaseIndex, 0, 0, calendar.length - 1);
+  var phase = calendar[phaseIndex] || calendar[0];
+  var week = safeNumber(player.currentWeek, player.week || 1, 1);
+
+  if (phase.weeks > 0) {
+    week = clamp(week, 1, phase.weeks);
+  } else {
+    week = 0;
+  }
+
+  player.currentPhaseIndex = phaseIndex;
+  player.currentWeek = week;
+  player.currentPhaseName = phase.phase;
+  player.week = week || getCalendarTotalNumberedWeeks(player);
+  player.maxWeeks = getCalendarTotalNumberedWeeks(player);
+}
+
+function getCurrentCalendarLabel(player) {
+  normalizeCalendarState(player);
+  if (player.currentPhaseName === 'Offseason') return 'Offseason';
+  return player.currentPhaseName + ' Week ' + player.currentWeek;
+}
+
+function isCalendarInOffseason(player) {
+  normalizeCalendarState(player);
+  return player.currentPhaseName === 'Offseason';
+}
+
+function getCalendarProgressPercent(player) {
+  normalizeCalendarState(player);
+  var calendar = getCareerCalendar(player);
+  var completedWeeks = 0;
+  for (var i = 0; i < player.currentPhaseIndex; i += 1) {
+    completedWeeks += Math.max(0, calendar[i].weeks || 0);
+  }
+  if (player.currentWeek > 0) completedWeeks += player.currentWeek;
+  if (isCalendarInOffseason(player)) completedWeeks = getCalendarTotalNumberedWeeks(player);
+  return (completedWeeks / getCalendarTotalNumberedWeeks(player)) * 100;
+}
+
+function advanceCalendarWeek(player) {
+  normalizeCalendarState(player);
+  var calendar = getCareerCalendar(player);
+  var phase = calendar[player.currentPhaseIndex];
+
+  if (!phase || phase.weeks === 0) return;
+
+  if (player.currentWeek < phase.weeks) {
+    player.currentWeek += 1;
+  } else if (player.currentPhaseIndex < calendar.length - 1) {
+    player.currentPhaseIndex += 1;
+    phase = calendar[player.currentPhaseIndex];
+    player.currentWeek = phase.weeks > 0 ? 1 : 0;
+  }
+
+  player.currentPhaseName = phase.phase;
+  player.week = player.currentWeek || getCalendarTotalNumberedWeeks(player);
+  player.maxWeeks = getCalendarTotalNumberedWeeks(player);
+}
+
 /* ════════════════════════════════════════════════════
    Dashboard rendering
    ════════════════════════════════════════════════════ */
@@ -475,8 +613,9 @@ function updateDashboard(player) {
   set('dashboard-jersey',      '#' + player.jerseyNumber);
   set('dashboard-overall',     player.overall);
   set('dashboard-career-title', getCareerTitle(player));
+  var calendarLabel = getCurrentCalendarLabel(player);
   set('dashboard-stage',       player.stage || 'High School');
-  set('dashboard-week',        'Week ' + player.week);
+  set('dashboard-week',        calendarLabel);
   var avatarEl = document.getElementById('dashboard-character-image');
   if (avatarEl && player.character && player.character.image) {
     avatarEl.src = player.character.image;
@@ -519,12 +658,18 @@ function updateDashboard(player) {
 
   // Season / week panel
   set('dashboard-season-label',  player.seasonLabel);
-  set('dashboard-week-progress', 'Week ' + player.week + ' of ' + player.maxWeeks);
+  set('dashboard-week-progress', calendarLabel);
   set('dashboard-record',        'Record: ' + player.wins + '-' + player.losses);
 
   // Week progress bar
   var fill = document.getElementById('week-progress-fill');
-  if (fill) fill.style.width = ((player.week / player.maxWeeks) * 100) + '%';
+  if (fill) fill.style.width = getCalendarProgressPercent(player) + '%';
+
+  var advanceButton = document.getElementById('advance-week-btn');
+  if (advanceButton) {
+    advanceButton.disabled = isCalendarInOffseason(player);
+    advanceButton.textContent = isCalendarInOffseason(player) ? 'Offseason' : 'Advance Week →';
+  }
 }
 
 /* ════════════════════════════════════════════════════
@@ -931,27 +1076,34 @@ function triggerWeeklyEvent(player) {
   addStoryEvent(evt.title, evt.body, evt.result);
 }
 
-/* ── endSeason ── */
-function endSeason(player) {
-  player.week = 1;
-  addStoryEvent(
-    'Season Complete',
-    'Your senior season is over. Recruiting and next-step decisions are coming soon.',
-    'Final Record: ' + player.wins + '-' + player.losses + '  ·  Draft Stock: ' + formatDraftStock(player.draftStock)
-  );
-}
-
 /* ── Advance Week button ── */
 onClick('advance-week-btn', function() {
   if (!currentPlayer) return;
+  if (isCalendarInOffseason(currentPlayer)) {
+    showDashboardMessage('You are in the offseason. More offseason actions are coming later.', '');
+    return;
+  }
+   
+  var previousLabel = getCurrentCalendarLabel(currentPlayer);
+  advanceCalendarWeek(currentPlayer);
+  var newLabel = getCurrentCalendarLabel(currentPlayer);
 
-  if (currentPlayer.week >= currentPlayer.maxWeeks) {
-    endSeason(currentPlayer);
+  // Small energy recovery per week
+  currentPlayer.energy = clamp(currentPlayer.energy + 10, 0, 100);
+
+  if (isCalendarInOffseason(currentPlayer)) {
+    addStoryEvent(
+      'Season Complete',
+      'Your senior season is over. Recruiting and next-step decisions are coming soon.',
+      'Final Record: ' + currentPlayer.wins + '-' + currentPlayer.losses + '  ·  Draft Stock: ' + formatDraftStock(currentPlayer.draftStock)
+    );
   } else {
-    currentPlayer.week += 1;
-    // Small energy recovery per week
-    currentPlayer.energy = clamp(currentPlayer.energy + 10, 0, 100);
     triggerWeeklyEvent(currentPlayer);
+    addStoryEvent(
+      'Calendar Advanced',
+      'You moved from ' + previousLabel + ' to ' + newLabel + '.',
+      '+10 Energy'
+    );
   }
 
   recalculateOverall(currentPlayer);
